@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Template to create s3 bucket and policy
+
+Parameters:
+
+  BucketName:
+    Type: String
+    Description: Bucket Name
+    Default: sqs-bucket-demo-9876
+
+Resources:
+  MyS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Description: Bucket on which we will attach and test bucket policy
+    Properties:
+      AccessControl: Private
+      LifecycleConfiguration:
+        Rules:
+          - Id: GlacierRule
+            Prefix: glacier
+            Status: Enabled
+            ExpirationInDays: 365
+            Transitions:
+              - TransitionInDays: 1
+                StorageClass: GLACIER
+      BucketName: !Ref BucketName
+          
+  MyS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref MyS3Bucket
+      PolicyDocument:
+        Statement:
+          -
+            Action:
+              - s3:*
+            Effect: Allow
+            Resource:
+              - !Sub arn:aws:s3:::${MyS3Bucket}
+              - !Sub arn:aws:s3:::${MyS3Bucket}/*
+            Principal:
+              AWS:
+                - '*'
+Outputs:
+  BucketName:
+    Value: !Ref MyS3Bucket
+    Description: Name of the sample Amazon S3 bucket with a lifecycle configuration.
