@@ -41,3 +41,8 @@ Resources:
             Principal:
               AWS:
                 - '*'
+# Out Put S3 Bucket Name
+Outputs:
+  BucketName:
+    Value: !Ref MyS3Bucket
+    Description: Name of the sample Amazon S3 bucket with a lifecycle configuration.
