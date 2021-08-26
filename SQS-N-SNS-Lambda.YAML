@@ -1,15 +1,18 @@
 AWSTemplateFormatVersion: 2010-09-09
+# Create One SQS Queue
 Resources:
   MyQueue:
     Type: 'AWS::SQS::Queue'
     Properties:
       QueueName: "SampleQueue"
 
+# Create SNS Topic
   MySNSTopic:
     Type: 'AWS::SNS::Topic'
     Properties:
       TopicName: "SampleTopic"
 
+# Create Subscription for SQS
   MySubscription:
     Type: AWS::SNS::Subscription
     Properties:
@@ -18,6 +21,7 @@ Resources:
       RawMessageDelivery: 'true'
       TopicArn: !Ref 'MySNSTopic'
 
+  # SQS Policy Implement
   SampleSQSPolicy:
     Type: 'AWS::SQS::QueuePolicy'
     Properties:
@@ -32,6 +36,8 @@ Resources:
           Principal: "*"
       Queues:
         - !Ref MyQueue
+
+  # Set Lambda Role/Policies
   MyRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -75,6 +81,7 @@ Resources:
               - "sqs:GetQueueAttributes"
             Resource: "*"
 
+  # Create Lambda Function
   MyFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -106,7 +113,8 @@ Resources:
           # S3Bucket: "node1-0-bucket"
           # S3Key: "README2.md"
           # S3ObjectVersion: "zdm4YxBgHUVhjCpNhciGWeiquJSWyNJi"
-
+          
+  # Create Mapping in  lambda function for SQS
   LambdaEventSourceMapping:
     Type: "AWS::Lambda::EventSourceMapping"
     Properties:
